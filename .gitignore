@@ -7,10 +7,20 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
-*.local
+# Node/Vite frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.env
+
+# Python/Flask backend
+backend/venv/
+backend/__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.db
+*.sqlite3
+backend/.env
 
 # Editor directories and files
 .vscode/*
@@ -22,3 +32,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# OS
+Thumbs.db
+ehthumbs.db
