@@ -15,9 +15,9 @@ export function Header({ toggleSidebar }) {
 
     <Link to="/" className="ml-4 flex items-center h-full">
       <img 
-        src="/assets/dashboard.png" 
+        src="/assets/KeyLock_Transparent.png" 
         alt="Logo" 
-        className="h-10 w-auto object-contain" 
+        className="h-40 w-auto object-contain" 
       />
     </Link>
   </div>
