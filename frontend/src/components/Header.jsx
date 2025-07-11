@@ -13,7 +13,7 @@ export function Header({ toggleSidebar }) {
       <Bars3Icon />
     </button>
 
-    <Link to="/" className="ml-4 flex items-center h-full">
+    <Link to="/LoggedHome" className="ml-4 flex items-center h-full">
       <img 
         src="/assets/KeyLock_Transparent.png" 
         alt="Logo" 
@@ -24,20 +24,6 @@ export function Header({ toggleSidebar }) {
 
       <div className="text-lg font-bold"></div>
       <div className="flex gap-4 items-center">
-        {/* Dashboard button */}
-        <button className="w-8 h-8">
-          <ChartBarIcon className="w-full h-full" />
-        </button>
-
-        {/* AI page button */}
-        <button className="w-8 h-8 text-white">
-          <ChatBubbleBottomCenterTextIcon className="w-full h-full" />
-        </button>
-
-        {/* Notification bell */}
-        <button className="w-8 h-8 text-white">
-          <BellIcon className="w-full h-full" />
-        </button>
 
         <div className="relative">
           <div

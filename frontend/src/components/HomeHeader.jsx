@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 export function HomeHeader() {
   const [isOpen, setIsOpen] = useState(false);
   return (
-    <header className="bg-black text-white p-4 flex justify-between items-center rounded-lg h-16 border-b border-gray-500">
+    <header className="w-full bg-black text-white p-4 flex justify-between items-center rounded-lg h-16 border-b border-gray-500">
 
 <div className="flex items-center">
 
@@ -17,6 +17,16 @@ export function HomeHeader() {
       />
     </Link>
   </div>
+
+    <div className="flex items-center gap-4">
+        <Link to="/login" className="text-white hover:underline">
+        Login
+        </Link>
+
+        <Link to="/downloads" className="text-white hover:underline">
+        Downloads
+        </Link>
+    </div>
 
     </header>
   );
