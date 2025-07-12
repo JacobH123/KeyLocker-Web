@@ -20,7 +20,8 @@ export default function HomePage() {
 
           {/* Right: Welcome message */}
           <h1 className="text-center md:text-left text-3xl md:text-5xl font-semibold max-w-xl">
-            A minimalist open-source password manager with maximum security
+            Secure Open-source <br />
+            Password Manager 
           </h1>
           
         </div>

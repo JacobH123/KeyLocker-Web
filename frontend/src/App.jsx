@@ -1,13 +1,12 @@
 
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { Header } from "./components/Header";
-import { Sidebar } from "./components/Sidebar";
+
 import Downloads from './pages/Downloads';
 import Settings from "./pages/Settings";
 import HomePage from "./pages/HomePage";
 import LoginPage from './pages/LoginPage';
-
+import Signup from './pages/Signup';
 export const App = () => {
 
   return (
@@ -20,6 +19,7 @@ export const App = () => {
               <Route path="/login" element={<LoginPage />} />
               <Route path="/downloads" element={<Downloads />} />
               <Route path="/settings" element={<Settings />} />
+              <Route path="/signup" element={<Signup/>} />
             </Routes>
           </main>
         
