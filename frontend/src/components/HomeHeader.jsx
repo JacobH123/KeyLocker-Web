@@ -20,6 +20,10 @@ export function HomeHeader() {
 
     <div className="flex items-center gap-4">
         <Link to="/downloads" className="text-white hover:underline">
+        Updates
+        </Link>
+
+        <Link to="/downloads" className="text-white hover:underline">
         Downloads
         </Link>
 
