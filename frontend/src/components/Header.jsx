@@ -13,7 +13,7 @@ export function Header({ toggleSidebar }) {
       <Bars3Icon />
     </button>
 
-    <Link to="/LoggedHome" className="ml-4 flex items-center h-full">
+    <Link to="/passwords" className="ml-4 flex items-center h-full">
       <img 
         src="/assets/KeyLock_Transparent.png" 
         alt="Logo" 

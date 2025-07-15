@@ -1,3 +1,5 @@
+import { Header } from "../components/Header";
+
 export default function Settings() {
   return (
     <div className="p-6 space-y-6">

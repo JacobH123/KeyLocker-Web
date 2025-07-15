@@ -19,7 +19,7 @@ export function HomeHeader() {
   </div>
 
     <div className="flex items-center gap-4">
-        <Link to="/downloads" className="text-white hover:underline">
+        <Link to="/updates" className="text-white hover:underline">
         Updates
         </Link>
 
