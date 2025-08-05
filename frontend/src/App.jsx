@@ -6,7 +6,7 @@ import HomePage from "./pages/HomePage";
 import LoginPage from './pages/LoginPage';
 import Signup from './pages/Signup';
 import Updates from './pages/UpdatePage';
-import Passwords from './pages/Passwords';
+import MainContent from './pages/MainContent';
 export const App = () => {
 
   return (
@@ -21,7 +21,7 @@ export const App = () => {
               <Route path="/settings" element={<Settings />} />
               <Route path="/signup" element={<Signup/>} />
               <Route path="/updates" element={<Updates/>} />
-              <Route path="/passwords" element={<Passwords/>} />
+              <Route path="/passwords" element={<MainContent/>} />
             </Routes>
           </main>
         

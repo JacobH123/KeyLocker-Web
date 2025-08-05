@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Sidebar } from "../components/Sidebar";
 import { Header } from "../components/Header";
-export default function Passwords() {
+export default function MainContent() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const toggleSidebar = () => setSidebarOpen(prev => !prev);
   return (
