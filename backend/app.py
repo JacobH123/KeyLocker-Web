@@ -7,7 +7,7 @@ import os
 
 load_dotenv() 
 app = Flask(__name__)
-CORS(app, origins=["http://127.0.0.1:5173"], supports_credentials=True)
+CORS(app, origins=["http://127.0.0.1:5173", "http://localhost:5173"], supports_credentials=True)
 
 DB_USER = os.getenv("DB_USER")
 DB_PASSWORD = os.getenv("DB_PASSWORD")
