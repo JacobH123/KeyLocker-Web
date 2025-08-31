@@ -20,6 +20,8 @@ backend/__pycache__/
 *.pyd
 *.db
 *.sqlite3
+keylocker_dump.sql
+
 backend/.env
 
 # Editor directories and files
