@@ -1,0 +1,17 @@
+from . import db
+
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    verified = db.Column(db.Boolean, default=False)
+    password_hash = db.Column(db.String(512))
+
+class VaultItem(db.Model):
+    __tablename__ = 'vault_items'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete="CASCADE"), nullable=False)
+    label = db.Column(db.String, nullable=False)
+    username = db.Column(db.String)
+    password_encrypted = db.Column(db.LargeBinary, nullable=False)
+    created_at = db.Column(db.DateTime, server_default=db.func.now())
+    updated_at = db.Column(db.DateTime, server_default=db.func.now(), onupdate=db.func.now())
