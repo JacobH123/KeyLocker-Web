@@ -5,7 +5,7 @@ from flask_cors import CORS
 from dotenv import load_dotenv
 import os
 
-load_dotenv()  # loads .env automatically
+load_dotenv()  
 
 db = SQLAlchemy()
 migrate = Migrate()
@@ -26,11 +26,9 @@ def create_app():
     db.init_app(app)
     migrate.init_app(app, db)
 
-    # Import models so Flask-Migrate sees them
+   
     from .models import User, VaultItem
-
-    # Register blueprints
-   # from .app.signup import signup_bp
-   # app.register_blueprint(signup_bp)
+    from .signup import auth_bp   # import blueprint
+    app.register_blueprint(auth_bp)
 
     return app
