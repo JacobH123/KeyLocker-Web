@@ -23,7 +23,7 @@ backend/__pycache__/
 keylocker_dump.sql
 
 backend/.env
-
+backend/.flaskenv
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
