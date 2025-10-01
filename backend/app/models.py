@@ -6,7 +6,8 @@ class User(db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     verified = db.Column(db.Boolean, default=False)
     password_hash = db.Column(db.String(512))
-
+    verification_code = db.Column(db.String(), nullable=True)
+    code_expires_at = db.Column(db.DateTime(), nullable=True)
 
 class VaultItem(db.Model):
     __tablename__ = 'vault_items'

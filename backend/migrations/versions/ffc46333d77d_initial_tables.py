@@ -24,6 +24,8 @@ def upgrade():
         sa.Column('email', sa.String(), nullable=False, unique=True),
         sa.Column('password_hash', sa.String(), nullable=True),
         sa.Column('verified', sa.Boolean(), nullable=True, server_default=sa.false()),
+        sa.Column('verification_code', sa.String(), nullable=True),
+        sa.Column('code_expires_at', sa.DateTime(), nullable=True),
     )
 
     # Then create vault_items table
