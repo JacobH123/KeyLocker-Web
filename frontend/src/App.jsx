@@ -7,6 +7,7 @@ import Signup from './pages/Signup';
 import Updates from './pages/UpdatePage';
 import MainContent from './pages/MainContent';
 import EmailVerify from "./pages/EmailVerify";
+import CreateMasterPassword from "./pages/CreateMasterPassword";
 import { AuthProvider, ProtectedRoute } from './components/RouteProtection';
 
 export const App = () => {
@@ -23,6 +24,7 @@ export const App = () => {
               <Route path="/signup" element={<Signup />} />
               <Route path="/updates" element={<Updates />} />
               <Route path="/emailverify" element={<EmailVerify />} />
+              <Route path="/createpassword" element={<CreateMasterPassword />} />
 
               {/* Protected routes */}
               <Route path="/passwords" element={
