@@ -2,6 +2,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_cors import CORS
+
 from dotenv import load_dotenv
 import os
 
@@ -29,6 +30,8 @@ def create_app():
    
     from .models import User, VaultItem
     from .signup import auth_bp   # import blueprint
+    from .verify import verify_bp
     app.register_blueprint(auth_bp)
+    app.register_blueprint(verify_bp)
 
     return app
