@@ -18,9 +18,12 @@ def signup():
     if User.query.filter_by(email=email).first():
         return jsonify({'error': 'Email already registered'}), 409
 
+    #add new user with entered email
     new_user = User(email=email)
     db.session.add(new_user)
     db.session.commit()
+    
+    #generate temp code to newuser database
     new_user.verification_code = generate_code()
     new_user.code_expires_at = datetime.utcnow() + timedelta(minutes=10)
     db.session.commit()
@@ -60,4 +63,4 @@ def login():
 
 
 def generate_code():
-    return secrets.token_hex(3) 
+    return secrets.token_hex(4) 
