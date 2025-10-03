@@ -1,12 +1,13 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Downloads from './pages/Downloads';
-import Settings from "./pages/Settings";
+import Settings from "./components/Settings";
 import HomePage from "./pages/HomePage";
 import LoginPage from './pages/LoginPage';
 import Signup from './pages/Signup';
 import Updates from './pages/UpdatePage';
 import MainContent from './pages/MainContent';
 import EmailVerify from "./pages/EmailVerify";
+import Vault from "./components/Vault";
 import CreateMasterPassword from "./pages/CreateMasterPassword";
 import { AuthProvider, ProtectedRoute } from './components/RouteProtection';
 
@@ -25,18 +26,20 @@ export const App = () => {
               <Route path="/updates" element={<Updates />} />
               <Route path="/emailverify" element={<EmailVerify />} />
               <Route path="/createpassword" element={<CreateMasterPassword />} />
+              <Route path="/passwords" element={<MainContent><Vault /></MainContent>} />
+              <Route path="/settings" element={<MainContent><Settings /></MainContent>} />
 
               {/* Protected routes */}
+              {/* 
               <Route path="/passwords" element={
                 <ProtectedRoute>
                   <MainContent />
                 </ProtectedRoute>
               } />
-              <Route path="/settings" element={
-                <ProtectedRoute>
-                  <Settings />
-                </ProtectedRoute>
-              } />
+               */}
+
+
+
             </Routes>
           </main>
         </div>
