@@ -1,12 +1,10 @@
-version: "3.9"
-
 services:
   db:
     image: postgres:14
     environment:
-      POSTGRES_USER: keylocker_user
-      POSTGRES_PASSWORD: yourpassword
-      POSTGRES_DB: keylocker_db
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     ports:
       - "5432:5432"
     volumes:
@@ -17,9 +15,9 @@ services:
     depends_on:
       - db
     environment:
-      DB_USER: keylocker_user
-      DB_PASSWORD: yourpassword
-      DB_NAME: keylocker_db
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
       DB_HOST: db
     ports:
       - "5000:5000"
