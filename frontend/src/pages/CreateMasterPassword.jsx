@@ -1,9 +1,13 @@
 import { LoginHeader } from "../components/LoginHeader";
-
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 
 export default function CreateMasterPassword() {
 
+  const [password, setPassword] = useState("");   
+  const [error, setError] = useState(null);       
+  const navigate = useNavigate();
 
   const handleCreatePassword = async () => {
     setError(null);
@@ -45,14 +49,18 @@ export default function CreateMasterPassword() {
         <div className="bg-[#2e2e3a] p-8 rounded-2xl shadow-lg w-full max-w-sm">
           <div className="space-y-4">
             <input
-              type="text"
+              type="password"
               placeholder="Enter Master Password"
-  
+              value={password} 
+              onChange={(e) => setPassword(e.target.value)}
               className="w-full px-4 py-2 rounded bg-[#1a1a2e] text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-600"
             />
 
-            <button 
+            {error && <p className="text-red-500 text-sm">{error}</p>}
+
             
+            <button 
+            disabled={!password}
             className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-4 rounded transition duration-200"
             onClick = {handleCreatePassword}
             >
