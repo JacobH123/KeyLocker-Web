@@ -2,8 +2,8 @@ from . import db
 from flask import Blueprint, request, jsonify
 
 from .models import User
-from datetime import datetime
-
+from datetime import datetime, timedelta
+import secrets
 verify_bp = Blueprint("verify", __name__)
 
 @verify_bp.route("/emailverify", methods=["POST", "OPTIONS"])
@@ -27,12 +27,18 @@ def verify_email():
     user.verified = True
     user.verification_code = None
     user.code_expires_at = None
+    
+    # generate a temporary token for password creation
+    temp_token = secrets.token_urlsafe(32)
+    user.temp_token = temp_token
+    user.temp_token_expires_at = datetime.utcnow() + timedelta(minutes=15)
 
     db.session.commit()
     
     
     return jsonify({
         "message": "User Verified",
+        "temp_token": temp_token,
         "user": {"id": user.id, "email": user.email}
     }), 200
     
