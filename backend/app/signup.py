@@ -10,7 +10,7 @@ auth_bp = Blueprint('auth', __name__)
 @auth_bp.route('/signup', methods=['POST'])
 def signup():
     data = request.get_json(force=True)
-    email = data.get('email')
+    email = data.get('email', '').strip().lower()
 
     if not email:
         return jsonify({'error': 'Missing email'}), 400
@@ -23,7 +23,8 @@ def signup():
     db.session.add(new_user)
     db.session.commit()
     
-    #generate temp code to newuser database
+    """3. When the user clicks create account, the webpage application shall send a verification
+code to the registered email."""
     new_user.verification_code = generate_code()
     new_user.code_expires_at = datetime.utcnow() + timedelta(minutes=10)
     db.session.commit()
@@ -60,6 +61,14 @@ def login():
         "message": "Login successful",
         "user": {"id": user.id, "email": user.email}
     }), 200
+
+
+
+@auth_bp.route('/createPassword', methods=['POST', 'OPTIONS'])
+def creatPassword():
+    
+    data = request.get_json()
+    password = data.get("password")
 
 
 def generate_code():
