@@ -58,11 +58,8 @@ const generatePassword = (length = 16) => {
 };
 
 export default function Vault() {
-  const [passwords, setPasswords] = useState([
-    { id: 1, site: 'GitHub', username: 'john@example.com', password: 'MySecurePass123!', category: 'Work', lastUpdated: '2024-01-15' },
-    { id: 2, site: 'Gmail', username: 'john.doe@gmail.com', password: 'Gmail2024$ecure', category: 'Personal', lastUpdated: '2024-01-10' },
-    { id: 3, site: 'LinkedIn', username: 'john.doe', password: 'LinkedPass456#', category: 'Work', lastUpdated: '2024-01-05' }
-  ]);
+  const [passwords, setPasswords] = useState([]);
+  
   const [showNewForm, setShowNewForm] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [showPassword, setShowPassword] = useState(false);
