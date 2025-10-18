@@ -2,12 +2,14 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_cors import CORS
+from flask_mail import Mail
 
 from dotenv import load_dotenv
 import os
 
 load_dotenv()  
 
+mail = Mail()
 db = SQLAlchemy()
 migrate = Migrate()
 
@@ -22,10 +24,19 @@ def create_app():
     DB_HOST = os.getenv("DB_HOST", "localhost")
     app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}/{DB_NAME}'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    
+    # Gmail SMTP config
+    app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+    app.config['MAIL_PORT'] = 587
+    app.config['MAIL_USE_TLS'] = True
+    app.config['MAIL_USERNAME'] = os.getenv("GMAIL_USER")
+    app.config['MAIL_PASSWORD'] = os.getenv("GMAIL_PASS")
+    app.config['MAIL_DEFAULT_SENDER'] = os.getenv("GMAIL_USER")
 
     # Initialize extensions
     db.init_app(app)
     migrate.init_app(app, db)
+    mail.init_app(app)
 
    
     from .models import User, VaultItem
