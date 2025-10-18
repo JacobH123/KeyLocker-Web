@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify
 from werkzeug.security import check_password_hash, generate_password_hash
 from .models import User
 from . import db
+from .email import send_email
 import secrets
 from datetime import datetime, timedelta
 
@@ -25,13 +26,23 @@ def signup():
     
     """3. When the user clicks create account, the webpage application shall send a verification
 code to the registered email."""
-    new_user.verification_code = generate_code()
+    code = generate_code()
+    new_user.verification_code = code
     new_user.code_expires_at = datetime.utcnow() + timedelta(minutes=10)
     db.session.commit()
     
+    html_body = f"""
+    <p>Hello,</p>
+    <p>Your verification code is: <strong style="font-size:18px;">{code}</strong></p>
+    <p>This code expires in 10 minutes.</p>
+    <p>Thanks,<br>KeyLocker Team</p>
+    """
+    sent = send_email(email, "Your KeyLocker Verification Code", html_body)
+    if not sent:
+        return jsonify({"success": False, "message": "Failed to send verification email"}), 500
     
     return jsonify({
-        'message': 'Email not in use',
+        'message': 'Email not in use, verification code sent',
         'redirect_to': '/emailverify',
         'user_email': email
     }), 201
