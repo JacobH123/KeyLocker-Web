@@ -12,10 +12,12 @@ load_dotenv()
 mail = Mail()
 db = SQLAlchemy()
 migrate = Migrate()
+frontend_url = os.getenv("FRONTEND_URL", "http://127.0.0.1:5173")
+allowed_origins = [frontend_url, "http://localhost:5173"]
 
 def create_app():
     app = Flask(__name__)
-    CORS(app, origins=["http://127.0.0.1:5173", "http://localhost:5173"], supports_credentials=True)
+    CORS(app,origins=allowed_origins,supports_credentials=True)
 
     # Database config
     DB_USER = os.getenv("DB_USER")
