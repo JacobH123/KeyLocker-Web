@@ -24,6 +24,10 @@ export default function EmailVerify() {
         const data = await res.json();
         console.log("Login response data:", data);
 
+
+        // Store the temporary token for password creation
+        sessionStorage.setItem("temp_token", data.temp_token)
+
         login(data.user)
         navigate("/createpassword");
       }else {
