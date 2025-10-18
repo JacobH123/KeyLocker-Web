@@ -19,6 +19,7 @@ export const App = () => {
           <main className="flex-1 bg-gradient-to-br from-[#1a1a2e] via-black to-[#1a1a2e] text-white overflow-auto">
             <Routes>
               {/* Public routes */}
+              {/*1. When the user opens the website URL, it displays the initial landing page  */}
               <Route path="/" element={<HomePage />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/downloads" element={<Downloads />} />
