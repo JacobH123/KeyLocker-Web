@@ -25,7 +25,7 @@ export default function LoginPage() {
         const data = await res.json();
         console.log("Login response data:", data);
         
-        // Now data.user should contain the user info from your updated backend
+        
         login(data.user);
         navigate("/passwords");
       } else {
