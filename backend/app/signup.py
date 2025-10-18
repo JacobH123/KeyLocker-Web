@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from werkzeug.security import check_password_hash
+from werkzeug.security import check_password_hash, generate_password_hash
 from .models import User
 from . import db
 import secrets
@@ -65,10 +65,36 @@ def login():
 
 
 @auth_bp.route('/createPassword', methods=['POST', 'OPTIONS'])
-def creatPassword():
-    
-    data = request.get_json()
+def createPassword():
+    if request.method == "OPTIONS":
+        return "", 200  # respond OK to preflight
+
+    data = request.get_json(force=True)
+    temp_token = data.get("temp_token")
     password = data.get("password")
+
+    if not temp_token or not password:
+        return jsonify({'error': 'Missing token or password'}), 400
+
+    
+    user = User.query.filter_by(temp_token=temp_token).first()
+
+    if not user:
+        return jsonify({'error': 'Invalid or expired token'}), 404
+
+    
+    if not user.temp_token_expires_at or user.temp_token_expires_at < datetime.utcnow():
+        return jsonify({'error': 'Token has expired'}), 409
+
+    # Set the user's password and clear the temp token
+    user.password_hash = generate_password_hash(password)
+    user.temp_token = None
+    user.temp_token_expires_at = None
+    user.verified = True  
+    
+    db.session.commit()
+
+    return jsonify({'message': 'Password successfully created'}), 200
 
 
 def generate_code():

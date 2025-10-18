@@ -8,6 +8,12 @@ class User(db.Model):
     password_hash = db.Column(db.String(512))
     verification_code = db.Column(db.String(), nullable=True)
     code_expires_at = db.Column(db.DateTime(), nullable=True)
+    
+    temp_token = db.Column(db.String(), nullable=True)
+    temp_token_expires_at = db.Column(db.DateTime(), nullable=True)
+    
+    session_token = db.Column(db.String(), nullable=True)
+    session_token_expires_at = db.Column(db.DateTime(), nullable=True)
 
 class VaultItem(db.Model):
     __tablename__ = 'vault_items'
