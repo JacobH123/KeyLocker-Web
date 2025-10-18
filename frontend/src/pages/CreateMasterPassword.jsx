@@ -5,6 +5,32 @@ import { LoginHeader } from "../components/LoginHeader";
 export default function CreateMasterPassword() {
 
 
+  const handleCreatePassword = async () => {
+    setError(null);
+    const temp_token = sessionStorage.getItem("temp_token");
+    try {
+      const res = await fetch("http://127.0.0.1:5000/createPassword", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({temp_token, password }),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        console.log("Password successfully created:", data);
+        navigate("/login");
+      } else {
+        const errorData = await res.json();
+        setError(errorData.error || "Signup failed");
+      }
+    } catch (err) {
+      console.error("Signup error:", err);
+      setError("Network error");
+    }
+  };
+
+
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-br from-[#1a1a2e] via-black to-[#1a1a2e] text-white">
       {/* Full-width top header */}
@@ -28,7 +54,7 @@ export default function CreateMasterPassword() {
             <button 
             
             className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-4 rounded transition duration-200"
-            
+            onClick = {handleCreatePassword}
             >
               Create 
             </button>
