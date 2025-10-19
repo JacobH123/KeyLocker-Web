@@ -1,5 +1,6 @@
 import { useState,useEffect } from "react";
-import { API_URL } from './config';
+import { API_URL } from '../config';
+
 
 import { 
   PlusCircle, 
