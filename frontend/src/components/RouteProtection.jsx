@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react';
-import { Navigate,useLocation } from 'react-router-dom';
+import { Navigate,useLocation,useNavigate  } from 'react-router-dom';
 
 const AuthContext = createContext();
 
@@ -87,4 +87,29 @@ export function EmailVerifyRoute({ children }) {
   }
 
   return children;
+}
+
+
+
+export function RedirectIfLoggedIn() {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const checkLogin = async () => {
+      try {
+        const res = await fetch("http://127.0.0.1:5000/me", {
+          method: "GET",
+          credentials: "include",
+        });
+        if (res.ok) {
+          navigate("/passwords");
+        }
+      } catch (err) {
+        console.log("Not logged in");
+      }
+    };
+    checkLogin();
+  }, [navigate]);
+
+  return null;
 }
