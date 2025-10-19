@@ -21,5 +21,5 @@ EXPOSE 5000
 ENV FLASK_APP=run:create_app
 ENV FLASK_ENV=production
 
-# Use Gunicorn in production
-CMD ["gunicorn", "-b", "0.0.0.0:5000", "run:create_app()"]
+# Start Gunicorn **after running migrations**
+CMD flask db upgrade && gunicorn -b 0.0.0.0:5000 run:create_app()
