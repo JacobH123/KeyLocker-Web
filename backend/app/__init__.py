@@ -17,7 +17,10 @@ allowed_origins = [frontend_url, "http://localhost:5173"]
 
 def create_app():
     app = Flask(__name__)
-    CORS(app,origins=allowed_origins,supports_credentials=True)
+    CORS(app,origins=allowed_origins,
+         supports_credentials=True,
+         allow_headers=["Content-Type", "Authorization"],
+         methods=["GET", "POST", "OPTIONS"],)
 
     # Database config
     DB_USER = os.getenv("DB_USER")
@@ -40,11 +43,13 @@ def create_app():
     migrate.init_app(app, db)
     mail.init_app(app)
 
-   
-    from .models import User, VaultItem
+    from . import models 
+    
     from .signup import auth_bp   # import blueprint
     from .verify import verify_bp
+    from .vault import vault_bp
     app.register_blueprint(auth_bp)
     app.register_blueprint(verify_bp)
+    app.register_blueprint(vault_bp)
 
     return app
