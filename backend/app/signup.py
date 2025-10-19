@@ -48,10 +48,10 @@ code to the registered email."""
     }), 201
 
 
-@auth_bp.route('/login', methods=['POST', 'OPTIONS'])
+@auth_bp.route('/login', methods=['POST']) #, 'OPTIONS' add back later maybe
 def login():
-    if request.method == "OPTIONS":
-        return "", 200
+ #   if request.method == "OPTIONS":
+#      return "", 200
 
     data = request.json
     email = data.get('email')
@@ -83,17 +83,20 @@ def login():
         "session_token",
         session_token,
         httponly=True,  # prevents JS access
-        samesite="Lax", # adjust if needed
+        samesite="None", # adjust if needed
+        secure=True,
         max_age=7*24*3600  # 7 days
     )
     return resp, 200
 
 
 
-@auth_bp.route('/createPassword', methods=['POST', 'OPTIONS'])
+@auth_bp.route('/createPassword', methods=['POST']) #, 'OPTIONS' add back later maybe
 def createPassword():
-    if request.method == "OPTIONS":
-        return "", 200  # respond OK to preflight
+    
+  
+ #   if request.method == "OPTIONS":
+ #       return "", 200  # respond OK to preflight
 
     data = request.get_json(force=True)
     temp_token = data.get("temp_token")
