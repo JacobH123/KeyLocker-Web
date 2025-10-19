@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, make_response
 from werkzeug.security import check_password_hash, generate_password_hash
 from .models import User
 from . import db
@@ -67,11 +67,26 @@ def login():
     
     if not user.verified:
           return jsonify({"error": "Account not verified. Please check your email."}), 403
-
-    return jsonify({
+      
+      
+    session_token = secrets.token_urlsafe(32)
+    user.session_token = session_token
+    user.session_token_expires_at = datetime.utcnow() + timedelta(days=7)  # example: 7-day session
+    db.session.commit()
+    
+    
+    resp = make_response(jsonify({
         "message": "Login successful",
         "user": {"id": user.id, "email": user.email}
-    }), 200
+    }))
+    resp.set_cookie(
+        "session_token",
+        session_token,
+        httponly=True,  # prevents JS access
+        samesite="Lax", # adjust if needed
+        max_age=7*24*3600  # 7 days
+    )
+    return resp, 200
 
 
 
