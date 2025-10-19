@@ -20,7 +20,7 @@ export default function Signup() {
     setIsLoading(true);
 
     try {
-      const res = await fetch("http://127.0.0.1:5000/signup", {
+      const res = await fetch(`${API_URL}/signup`, {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },

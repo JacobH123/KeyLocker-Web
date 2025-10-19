@@ -1,4 +1,5 @@
 import { useState,useEffect } from "react";
+import { API_URL } from './config';
 
 import { 
   PlusCircle, 
@@ -64,7 +65,7 @@ export default function Vault() {
     useEffect(() => {
     const fetchPasswords = async () => {
       try {
-        const res = await fetch("http://127.0.0.1:5000/vault", {
+        const res = await fetch(`${API_URL}/vault`, {
           method: "GET",
           credentials: "include", // send the session cookie
         });
@@ -117,7 +118,7 @@ export default function Vault() {
   const handleAddPassword = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch("http://127.0.0.1:5000/vault", {
+      const res = await fetch(`${API_URL}/vault`, {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
@@ -144,7 +145,7 @@ export default function Vault() {
 
 const handleDelete = async (id) => {
   try {
-    const res = await fetch(`http://127.0.0.1:5000/vault/${id}`, {
+    const res = await fetch(`${API_URL}/vault/${id}`, {
       method: "DELETE",
       credentials: "include"
     });

@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import { Navigate,useLocation,useNavigate  } from 'react-router-dom';
+import { API_URL } from './config';
 
 const AuthContext = createContext();
 
@@ -97,7 +98,7 @@ export function RedirectIfLoggedIn() {
   useEffect(() => {
     const checkLogin = async () => {
       try {
-        const res = await fetch("http://127.0.0.1:5000/me", {
+        const res = await fetch(`${API_URL}/me`, {
           method: "GET",
           credentials: "include",
         });

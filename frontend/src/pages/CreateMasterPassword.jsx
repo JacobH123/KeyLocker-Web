@@ -13,7 +13,7 @@ export default function CreateMasterPassword() {
     setError(null);
     const temp_token = sessionStorage.getItem("temp_token");
     try {
-      const res = await fetch("http://127.0.0.1:5000/createPassword", {
+      const res = await fetch(`${API_URL}/createPassword`, {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
