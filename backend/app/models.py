@@ -19,6 +19,7 @@ class VaultItem(db.Model):
     __tablename__ = 'vault_items'
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete="CASCADE"), nullable=False)
+    site = db.Column(db.String, nullable=True)
     label = db.Column(db.String, nullable=False)
     username = db.Column(db.String)
     password_encrypted = db.Column(db.LargeBinary, nullable=False)
