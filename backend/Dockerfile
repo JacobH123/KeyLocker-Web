@@ -22,4 +22,5 @@ ENV FLASK_APP=run:create_app
 ENV FLASK_ENV=production
 
 # Start Gunicorn **after running migrations**
-CMD flask db upgrade && gunicorn -b 0.0.0.0:5000 run:create_app()
+CMD ["gunicorn", "-b", "0.0.0.0:5000", "run:create_app"]
+
