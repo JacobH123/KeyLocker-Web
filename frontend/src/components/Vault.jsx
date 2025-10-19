@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState,useEffect } from "react";
+
 import { 
   PlusCircle, 
   ArrowLeft, 
@@ -59,6 +60,27 @@ const generatePassword = (length = 16) => {
 
 export default function Vault() {
   const [passwords, setPasswords] = useState([]);
+
+    useEffect(() => {
+    const fetchPasswords = async () => {
+      try {
+        const res = await fetch("http://127.0.0.1:5000/vault", {
+          method: "GET",
+          credentials: "include", // send the session cookie
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setPasswords(data); // populate passwords state with backend data
+        } else {
+          console.error("Failed to fetch passwords:", res.status);
+        }
+      } catch (err) {
+        console.error("Error fetching passwords:", err);
+      }
+    };
+
+    fetchPasswords();
+  }, []);
   
   const [showNewForm, setShowNewForm] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -76,8 +98,8 @@ export default function Vault() {
   };
 
   const filteredPasswords = passwords.filter(pw => 
-    pw.site.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    pw.username.toLowerCase().includes(searchQuery.toLowerCase())
+    (pw.site || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (pw.username || '').toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const handleCopy = (text, type, id) => {
@@ -94,22 +116,49 @@ export default function Vault() {
 
   const handleAddPassword = async (e) => {
     e.preventDefault();
-    const res = await fetch("http://127.0.0.1:5000/vault", {
-      method: "POST",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData)
-    });
-    if (res.ok) {
-      const data = await res.json();
-      setPasswords(prev => [{ ...formData, id: data.id, lastUpdated: new Date().toISOString().split('T')[0] }, ...prev]);
+    try {
+      const res = await fetch("http://127.0.0.1:5000/vault", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData)
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        setPasswords(prev => [
+          { ...formData, id: data.id, lastUpdated: new Date().toISOString().split('T')[0] },
+          ...prev
+        ]);
+
+        setShowNewForm(false);
+
+        setFormData({ site: '', username: '', password: '', category: 'Personal' });
+
+        showNotification("Password added successfully!");
+      }
+    } catch (err) {
+      console.error("Failed to add password:", err);
     }
   };
 
-  const handleDelete = (id) => {
-    setPasswords(prev => prev.filter(pw => pw.id !== id));
-    showNotification('Password deleted');
-  };
+const handleDelete = async (id) => {
+  try {
+    const res = await fetch(`http://127.0.0.1:5000/vault/${id}`, {
+      method: "DELETE",
+      credentials: "include"
+    });
+    if (res.ok) {
+      setPasswords(prev => prev.filter(pw => pw.id !== id));
+      showNotification('Password deleted');
+    } else {
+      showNotification('Failed to delete password');
+    }
+  } catch (err) {
+    showNotification('Error deleting password');
+  }
+};
+
 
   const handleGenerate = () => {
     const newPass = generatePassword();
