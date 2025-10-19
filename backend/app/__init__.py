@@ -30,13 +30,6 @@ def create_app():
     app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}/{DB_NAME}'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     
-    # Gmail SMTP config
-    app.config['MAIL_SERVER'] = 'smtp.gmail.com'
-    app.config['MAIL_PORT'] = 587
-    app.config['MAIL_USE_TLS'] = True
-    app.config['MAIL_USERNAME'] = os.getenv("GMAIL_USER")
-    app.config['MAIL_PASSWORD'] = os.getenv("GMAIL_PASS")
-    app.config['MAIL_DEFAULT_SENDER'] = os.getenv("GMAIL_USER")
 
     # Initialize extensions
     db.init_app(app)
