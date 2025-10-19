@@ -92,17 +92,18 @@ export default function Vault() {
     setTimeout(() => setNotification(null), 3000);
   };
 
-  const handleAddPassword = (e) => {
+  const handleAddPassword = async (e) => {
     e.preventDefault();
-    const newPw = {
-      id: Date.now(),
-      ...formData,
-      lastUpdated: new Date().toISOString().split('T')[0]
-    };
-    setPasswords(prev => [newPw, ...prev]);
-    setFormData({ site: '', username: '', password: '', category: 'Personal' });
-    setShowNewForm(false);
-    showNotification('Password added successfully!');
+    const res = await fetch("http://127.0.0.1:5000/vault", {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(formData)
+    });
+    if (res.ok) {
+      const data = await res.json();
+      setPasswords(prev => [{ ...formData, id: data.id, lastUpdated: new Date().toISOString().split('T')[0] }, ...prev]);
+    }
   };
 
   const handleDelete = (id) => {
