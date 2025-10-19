@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate,useLocation } from 'react-router-dom';
 
 const AuthContext = createContext();
 
@@ -63,4 +63,28 @@ export function ProtectedRoute({ children }) {
   }
 
   return user ? children : <Navigate to="/login" replace />;
+}
+
+
+
+export function TempTokenRoute({ children }) {
+  const tempToken = sessionStorage.getItem("temp_token");
+
+  if (!tempToken) {
+    return <Navigate to="/signup" replace />; // redirect if no token
+  }
+
+  return children;
+}
+
+//Protect against manual url
+export function EmailVerifyRoute({ children }) {
+  const location = useLocation();
+  const email = location.state?.email;
+
+  if (!email) {
+    return <Navigate to="/signup" replace />;
+  }
+
+  return children;
 }
