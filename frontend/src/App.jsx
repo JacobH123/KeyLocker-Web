@@ -1,4 +1,5 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route,useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 import Downloads from './pages/Downloads';
 import Settings from "./components/Settings";
 import HomePage from "./pages/HomePage";
@@ -10,11 +11,14 @@ import EmailVerify from "./pages/EmailVerify";
 import Vault from "./components/Vault";
 import CreateMasterPassword from "./pages/CreateMasterPassword";
 import { AuthProvider, ProtectedRoute,EmailVerifyRoute,TempTokenRoute } from './components/RouteProtection';
+import { RedirectIfLoggedIn } from "./components/RouteProtection";
 
 export const App = () => {
+
   return (
     <AuthProvider>
       <Router>
+        {/* <RedirectIfLoggedIn />*/}
         <div className="flex flex-col min-h-screen bg-black">
           <main className="flex-1 bg-gradient-to-br from-[#1a1a2e] via-black to-[#1a1a2e] text-white overflow-auto">
             <Routes>
@@ -33,8 +37,6 @@ export const App = () => {
               {/* Protected login routes*/}
               <Route path="/passwords" element={<ProtectedRoute><MainContent><Vault /></MainContent></ProtectedRoute>} />
               <Route path="/settings" element={<ProtectedRoute><MainContent><Settings /></MainContent></ProtectedRoute>} />
-
-
 
 
 
