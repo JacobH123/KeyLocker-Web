@@ -9,7 +9,7 @@ import MainContent from './pages/MainContent';
 import EmailVerify from "./pages/EmailVerify";
 import Vault from "./components/Vault";
 import CreateMasterPassword from "./pages/CreateMasterPassword";
-import { AuthProvider, ProtectedRoute } from './components/RouteProtection';
+import { AuthProvider, ProtectedRoute,EmailVerifyRoute,TempTokenRoute } from './components/RouteProtection';
 
 export const App = () => {
   return (
@@ -25,19 +25,16 @@ export const App = () => {
               <Route path="/downloads" element={<Downloads />} />
               <Route path="/signup" element={<Signup />} />
               <Route path="/updates" element={<Updates />} />
-              <Route path="/emailverify" element={<EmailVerify />} />
-              <Route path="/createpassword" element={<CreateMasterPassword />} />
-              <Route path="/passwords" element={<MainContent><Vault /></MainContent>} />
-              <Route path="/settings" element={<MainContent><Settings /></MainContent>} />
 
-              {/* Protected routes */}
-              {/* 
-              <Route path="/passwords" element={
-                <ProtectedRoute>
-                  <MainContent />
-                </ProtectedRoute>
-              } />
-               */}
+              {/* Signup flow routes */}
+              <Route path="/emailverify" element={<EmailVerifyRoute><EmailVerify /> </EmailVerifyRoute>}/>
+              <Route path="/createpassword"element={<TempTokenRoute><CreateMasterPassword /> </TempTokenRoute>}/>
+
+              {/* Protected login routes*/}
+              <Route path="/passwords" element={<ProtectedRoute><MainContent><Vault /></MainContent></ProtectedRoute>} />
+              <Route path="/settings" element={<ProtectedRoute><MainContent><Settings /></MainContent></ProtectedRoute>} />
+
+
 
 
 
