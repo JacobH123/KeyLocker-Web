@@ -15,9 +15,9 @@ def get_passwords(current_user):
         "id": pw.id,
         "site": pw.site,
         "username": pw.username,
-        "password": pw.password,
-        "category": pw.category,
-        "lastUpdated": pw.last_updated.strftime("%Y-%m-%d")
+        "password": pw.password_encrypted.decode(),  # decode bytes to string
+        "category": pw.label,  # label acts as category
+        "lastUpdated": pw.updated_at.strftime("%Y-%m-%d")
     } for pw in passwords]), 200
 
 
@@ -27,10 +27,23 @@ def add_password(current_user):
     data = request.get_json(force=True)
     pw = VaultItem(
         user_id=current_user.id,
-        label=data["site"],            
-        username=data["username"],
-        password_encrypted=data["password"].encode(),  
+        site = data["site"], 
+        label=data.get("category", "Personal"),             
+        username=data.get("username"),
+        password_encrypted=data.get("password").encode()  
     )
     db.session.add(pw)
     db.session.commit()
     return jsonify({"message": "Password added successfully", "id": pw.id}), 201
+
+
+
+@vault_bp.route("/vault/<int:pw_id>", methods=["DELETE"])
+@login_required
+def delete_password(current_user, pw_id):
+    pw = VaultItem.query.filter_by(id=pw_id, user_id=current_user.id).first()
+    if not pw:
+        return jsonify({"error": "Password not found"}), 404
+    db.session.delete(pw)
+    db.session.commit()
+    return jsonify({"message": "Password deleted"}), 200
