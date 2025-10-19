@@ -18,7 +18,7 @@ export const App = () => {
   return (
     <AuthProvider>
       <Router>
-        {/* <RedirectIfLoggedIn />*/}
+        {/* <RedirectIfLoggedIn />*/} 
         <div className="flex flex-col min-h-screen bg-black">
           <main className="flex-1 bg-gradient-to-br from-[#1a1a2e] via-black to-[#1a1a2e] text-white overflow-auto">
             <Routes>
