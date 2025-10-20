@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from .models import User, VaultItem
-from .routes import login_required  # your decorator
+from .routes import login_required  
 from . import db
 from datetime import datetime
 

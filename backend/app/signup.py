@@ -1,7 +1,8 @@
 from flask import Blueprint, request, jsonify, make_response
+from flask_limiter.util import get_remote_address
 from werkzeug.security import check_password_hash, generate_password_hash
 from .models import User
-from . import db
+from . import db, limiter
 from .email import send_email
 import secrets
 from datetime import datetime, timedelta
@@ -9,6 +10,7 @@ from datetime import datetime, timedelta
 auth_bp = Blueprint('auth', __name__)
 
 @auth_bp.route('/signup', methods=['POST'])
+@limiter.limit("10 per hour", key_func=get_remote_address)
 def signup():
     data = request.get_json(force=True)
     email = data.get('email', '').strip().lower()
@@ -49,6 +51,7 @@ code to the registered email."""
 
 
 @auth_bp.route('/login', methods=['POST']) #, 'OPTIONS' add back later maybe
+@limiter.limit("10 per hour", key_func=get_remote_address)
 def login():
  #   if request.method == "OPTIONS":
 #      return "", 200
@@ -92,6 +95,7 @@ def login():
 
 
 @auth_bp.route('/createPassword', methods=['POST']) #, 'OPTIONS' add back later maybe
+@limiter.limit("10 per hour", key_func=get_remote_address)
 def createPassword():
     
   
