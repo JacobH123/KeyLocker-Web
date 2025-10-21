@@ -1,44 +1,53 @@
 import { useState } from "react";
 import { Menu, User, Settings, LogOut, ChevronDown } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
+import { API_URL } from '../config';
+
 
 export function Header({ toggleSidebar }) {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
 
+  const [notification, setNotification] = useState(null);
+  const showNotification = (message) => {
+    setNotification(message);
+    setTimeout(() => setNotification(null), 3000);
+  };
+
+  const handleLogout = async () => {
+    const token = localStorage.getItem("sessionToken");
+    try {
+      const res = await fetch(`${API_URL}/logout`, {
+        method: "POST",
+        headers: { 
+            "Authorization": `Bearer ${token}`
+            }
+      });
+  
+      if (res.ok) {
+        localStorage.removeItem("sessionToken");
+        navigate("/login");
+      } else {
+        showNotification('Failed to logout');
+      }
+    } catch (err) {
+      showNotification('Failed to logout');
+    }
+  };
+
   const handleMenuClick = (action) => {
-    setIsOpen(false);
+    
     if (action === 'profile') {
       // Navigate to profile or handle profile action
       console.log('Profile clicked');
     } else if (action === 'settings') {
       navigate('/settings');
     } else if (action === 'logout') {
-      handleLogout()
+      handleLogout();
       console.log('Logout clicked');
     }
+    setIsOpen(false);
   };
-
-    const handleLogout = async () => {
-      const token = localStorage.getItem("sessionToken");
-        try {
-          const res = await fetch(`${API_URL}/logout`, {
-            method: "POST",
-            headers: { 
-                "Authorization": `Bearer ${token}`
-                }
-          });
-      
-          if (res.ok) {
-            localStorage.removeItem("sessionToken");
-            navigate("/login");
-          } else {
-            showNotification('Failed to logout');
-          }
-        } catch (err) {
-          showNotification('Failed to logout');
-        }
-      };
     
 
 
@@ -84,7 +93,9 @@ export function Header({ toggleSidebar }) {
                 onClick={() => setIsOpen(false)}
               />
               
-              <div className="absolute right-0 mt-2 w-56 bg-slate-800 border border-gray-700 rounded-xl shadow-2xl z-20 overflow-hidden">
+              <div className="absolute right-0 mt-2 w-56 bg-slate-800 border border-gray-700 rounded-xl shadow-2xl z-20 overflow-hidden"
+              onClick={(e) => e.stopPropagation()}
+              >
                 {/* User Info Header */}
                 <div className="px-4 py-3 bg-slate-900 border-b border-gray-700">
                   <p className="font-semibold text-white">John Doe</p>
