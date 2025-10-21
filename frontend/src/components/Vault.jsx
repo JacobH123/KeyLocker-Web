@@ -1,5 +1,6 @@
 import { useState,useEffect } from "react";
 import { API_URL } from '../config';
+import { useAuth } from './RouteProtection';
 
 
 import { 
@@ -62,10 +63,12 @@ const generatePassword = (length = 16) => {
 
 export default function Vault() {
   const [passwords, setPasswords] = useState([]);
+  const { user, isLoading } = useAuth();
 
     useEffect(() => {
     const fetchPasswords = async () => {
       const token = localStorage.getItem("sessionToken");
+      if (!token || !isLoading) return; // Wait for user to be authenticated
       try {
         const res = await fetch(`${API_URL}/vault`, {
           method: "GET",
@@ -86,8 +89,10 @@ export default function Vault() {
       }
     };
 
-    fetchPasswords();
-  }, []);
+    if (!isLoading) {
+      fetchPasswords();
+    }
+  }, [isLoading]);
   
   const [showNewForm, setShowNewForm] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -181,6 +186,18 @@ const handleDelete = async (id) => {
   };
 
   const strength = calculateStrength(formData.password);
+
+  // Show loading state while authentication is being verified
+  if (isLoading) {
+    return (
+      <div className="flex-1 p-6 bg-gradient-to-br from-[#1a1a2e] via-black to-[#1a1a2e] text-white overflow-auto flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
+          <p className="text-gray-400">Loading vault...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex-1 p-6 bg-gradient-to-br from-[#1a1a2e] via-black to-[#1a1a2e] text-white overflow-auto">
