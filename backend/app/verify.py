@@ -42,6 +42,22 @@ def verify_email():
         "user": {"id": user.id, "email": user.email}
     }), 200
     
+    
+    
+    
+@verify_bp.route("/verify-token", methods=["GET"])
+def verify_token():
+    auth_header = request.headers.get("Authorization")
+    if not auth_header or not auth_header.startswith("Bearer "):
+        return jsonify({"error": "Unauthorized"}), 401
+
+    token = auth_header.split()[1]
+    user = User.query.filter_by(session_token=token).first()
+    if not user or (user.session_token_expires_at and user.session_token_expires_at < datetime.utcnow()):
+        return jsonify({"error": "Unauthorized"}), 401
+
+    return jsonify({"user": {"id": user.id, "email": user.email}})
+
 
         
 
