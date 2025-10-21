@@ -22,16 +22,20 @@ export default function LoginPage() {
         body: JSON.stringify({ email, password }),
       });
 
+      const data = await res.json().catch(() => ({}));
+
+      if (res.status === 429) {
+        setError("Too many login attempts. Please wait and try again later.");
+        return;
+      }
+      
       if (res.ok) {
-        const data = await res.json();
         console.log("Login response data:", data);
-        
-        
+        localStorage.setItem("sessionToken", data.user.session_token); //store sesssion
         login(data.user);
         navigate("/passwords");
       } else {
-        const errorData = await res.json();
-        setError(errorData.error || "Login failed");
+        setError(data.error || "Login failed");
       }
     } catch (err) {
       console.error("Login error:", err);
