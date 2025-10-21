@@ -4,32 +4,43 @@ import { API_URL } from '../config';
 
 const AuthContext = createContext();
 
+
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // On mount, try to load user from localStorage
+  // On mount, verify session token with backend
   useEffect(() => {
-    try {
-      const storedUser = localStorage.getItem("user");
-      if (storedUser && storedUser !== "undefined" && storedUser !== "null") {
-        setUser(JSON.parse(storedUser));
-      }
-    } catch (err) {
-      console.error("Failed to parse user from localStorage:", err);
-      localStorage.removeItem("user"); // clear bad data
-    } finally {
+    const token = localStorage.getItem("sessionToken");
+    if (!token) {
       setIsLoading(false);
+      return;
     }
+
+    fetch(`${API_URL}/verify-token`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Invalid token");
+        return res.json();
+      })
+      .then((data) => setUser(data.user))
+      .catch(() => {
+        localStorage.removeItem("sessionToken");
+        setUser(null);
+      })
+      .finally(() => setIsLoading(false));
   }, []);
 
-  const login = (userData) => {
-    localStorage.setItem("user", JSON.stringify(userData));
+  
+  const login = (userData, token) => {
+    localStorage.setItem("sessionToken", token);
     setUser(userData);
   };
 
+  
   const logout = () => {
-    localStorage.removeItem("user");
+    localStorage.removeItem("sessionToken");
     setUser(null);
   };
 
@@ -41,17 +52,13 @@ export function AuthProvider({ children }) {
 }
 
 export function useAuth() {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
+  return useContext(AuthContext);
 }
 
-export function ProtectedRoute({ children }) {
+
+export  function ProtectedRoute({ children }) {
   const { user, isLoading } = useAuth();
 
-  // Show loading while checking auth status
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen text-white">
