@@ -14,10 +14,33 @@ export function Header({ toggleSidebar }) {
     } else if (action === 'settings') {
       navigate('/settings');
     } else if (action === 'logout') {
-      // Handle logout
+      handleLogout()
       console.log('Logout clicked');
     }
   };
+
+    const handleLogout = async () => {
+      const token = localStorage.getItem("sessionToken");
+        try {
+          const res = await fetch(`${API_URL}/logout`, {
+            method: "POST",
+            headers: { 
+                "Authorization": `Bearer ${token}`
+                }
+          });
+      
+          if (res.ok) {
+            localStorage.removeItem("sessionToken");
+            navigate("/login");
+          } else {
+            showNotification('Failed to logout');
+          }
+        } catch (err) {
+          showNotification('Failed to logout');
+        }
+      };
+    
+
 
   return (
     <header className="bg-black text-white p-4 flex justify-between items-center rounded-lg h-16 border-b border-gray-700">
