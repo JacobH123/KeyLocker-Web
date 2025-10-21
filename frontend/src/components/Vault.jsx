@@ -65,34 +65,52 @@ export default function Vault() {
   const [passwords, setPasswords] = useState([]);
   const { user, isLoading } = useAuth();
 
-    useEffect(() => {
-    const fetchPasswords = async () => {
-      const token = localStorage.getItem("sessionToken");
-      if (!token || !isLoading) return; // Wait for user to be authenticated
-      try {
-        const res = await fetch(`${API_URL}/vault`, {
-          method: "GET",
-          headers: { 
-          "Content-Type": "application/json" ,
-          "Authorization": `Bearer ${token}`
-          }
-        });
-
-        if (res.ok) {
-          const data = await res.json();
-          setPasswords(data); // populate passwords state with backend data
-        } else {
-          console.error("Failed to fetch passwords:", res.status);
-        }
-      } catch (err) {
-        console.error("Error fetching passwords:", err);
-      }
-    };
-
-    if (!isLoading) {
-      fetchPasswords();
+useEffect(() => {
+  console.log("=== Vault useEffect triggered ===", { isLoading });
+  
+  const fetchPasswords = async () => {
+    const token = localStorage.getItem("sessionToken");
+    console.log("Token from localStorage:", token);
+    
+    if (!token || isLoading) {
+      console.log("Skipping fetch - no token or still loading", { hasToken: !!token, isLoading });
+      return;
     }
-  }, [isLoading]);
+    
+    console.log("Making GET request to /vault");
+    
+    try {
+      const res = await fetch(`${API_URL}/vault`, {
+        method: "GET",
+        headers: { 
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        }
+      });
+
+      console.log("GET /vault response status:", res.status);
+
+      if (res.ok) {
+        const data = await res.json();
+        console.log("Passwords fetched successfully:", data);
+        setPasswords(data);
+      } else {
+        console.error("Failed to fetch passwords:", res.status);
+      }
+    } catch (err) {
+      console.error("Error fetching passwords:", err);
+    }
+  };
+
+  if (!isLoading) {
+    console.log("isLoading is false, calling fetchPasswords");
+    fetchPasswords();
+  } else {
+    console.log("Still loading, not fetching yet");
+  }
+}, [isLoading]);
+
+
   
   const [showNewForm, setShowNewForm] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
