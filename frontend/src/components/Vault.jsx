@@ -117,12 +117,15 @@ export default function Vault() {
   };
 
   const handleAddPassword = async (e) => {
+    const token = localStorage.getItem("sessionToken");
     e.preventDefault();
     try {
       const res = await fetch(`${API_URL}/vault`, {
         method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json" ,
+          "Authorization": `Bearer ${token}`
+          },
         body: JSON.stringify(formData)
       });
 
