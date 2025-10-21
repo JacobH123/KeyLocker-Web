@@ -78,19 +78,14 @@ def login():
     db.session.commit()
     
     
-    resp = make_response(jsonify({
+    return jsonify({
         "message": "Login successful",
-        "user": {"id": user.id, "email": user.email}
-    }))
-    resp.set_cookie(
-        "session_token",
-        session_token,
-        httponly=True,  # prevents JS access
-        samesite="None", # adjust if needed
-        secure=True,
-        max_age=7*24*3600  # 7 days
-    )
-    return resp, 200
+        "user": {
+            "id": user.id,
+            "email": user.email,
+            "session_token": session_token
+        }
+    }), 200
 
 
 
