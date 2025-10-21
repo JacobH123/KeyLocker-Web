@@ -31,8 +31,7 @@ export default function LoginPage() {
       
       if (res.ok) {
         console.log("Login response data:", data);
-        localStorage.setItem("sessionToken", data.user.session_token); //store sesssion
-        login(data.user);
+        login(data.user,data.token);
         navigate("/passwords");
       } else {
         setError(data.error || "Login failed");
