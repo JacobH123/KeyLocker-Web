@@ -6,6 +6,7 @@ from . import db, limiter
 from .email import send_email
 import secrets
 from datetime import datetime, timedelta
+from .routes import login_required  
 
 auth_bp = Blueprint('auth', __name__)
 
@@ -123,6 +124,16 @@ def createPassword():
     db.session.commit()
 
     return jsonify({'message': 'Password successfully created'}), 200
+
+
+@auth_bp.route("/logout", methods=["POST"])
+@login_required
+def logout(current_user):
+    current_user.session_token = None
+    current_user.session_token_expires_at = None
+    db.session.commit()
+    return jsonify({"message": "Logged out successfully"}), 200
+
 
 
 def generate_code():
