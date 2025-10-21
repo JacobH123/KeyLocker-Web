@@ -153,6 +153,7 @@ export default function Vault() {
   };
 
 const handleDelete = async (id) => {
+  const token = localStorage.getItem("sessionToken");
   try {
     const res = await fetch(`${API_URL}/vault/${id}`, {
       method: "DELETE",
