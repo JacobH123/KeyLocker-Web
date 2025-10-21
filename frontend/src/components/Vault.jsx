@@ -65,11 +65,16 @@ export default function Vault() {
 
     useEffect(() => {
     const fetchPasswords = async () => {
+      const token = localStorage.getItem("sessionToken");
       try {
         const res = await fetch(`${API_URL}/vault`, {
           method: "GET",
-          credentials: "include", // send the session cookie
+          headers: { 
+          "Content-Type": "application/json" ,
+          "Authorization": `Bearer ${token}`
+          }
         });
+
         if (res.ok) {
           const data = await res.json();
           setPasswords(data); // populate passwords state with backend data
@@ -151,8 +156,12 @@ const handleDelete = async (id) => {
   try {
     const res = await fetch(`${API_URL}/vault/${id}`, {
       method: "DELETE",
-      credentials: "include"
+      headers: { 
+          "Content-Type": "application/json" ,
+          "Authorization": `Bearer ${token}`
+          }
     });
+
     if (res.ok) {
       setPasswords(prev => prev.filter(pw => pw.id !== id));
       showNotification('Password deleted');
