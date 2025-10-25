@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useAuth } from "../components/RouteProtection";
 import { useNavigate } from 'react-router-dom';
 import { API_URL } from '../config';
+import { deriveVaultKey, hashPasswordForLogin, serializeVaultKey  } from '../cryptoHelpers';
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -15,11 +16,13 @@ export default function LoginPage() {
   const handleLogin = async () => {
     setError(null);
     try {
+
+      const hashedPassword = await hashPasswordForLogin(password,email);
       const res = await fetch(`${API_URL}/login`, {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password: hashedPassword }),
       });
 
       const data = await res.json().catch(() => ({}));
@@ -30,8 +33,14 @@ export default function LoginPage() {
       }
       
       if (res.ok) {
-        console.log("Login response data:", data);
-        login(data.user,data.token);
+      
+        const vaultKey = await deriveVaultKey(password, data.user.id);
+        const serializedKey = await serializeVaultKey(vaultKey);
+        sessionStorage.setItem("vaultKey", serializedKey);
+        
+        
+        login(data.user, data.token);
+
         navigate("/passwords");
       } else {
         setError(data.error || "Login failed");
