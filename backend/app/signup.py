@@ -117,7 +117,7 @@ def createPassword():
         return jsonify({'error': 'Token has expired'}), 409
 
     # Set the user's password and clear the temp token
-    user.password_hash = generate_password_hash(password)
+    user.password_hash = generate_password_hash(password) #double hash the password
     user.temp_token = None
     user.temp_token_expires_at = None
     user.verified = True  
