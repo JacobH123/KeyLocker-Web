@@ -1,7 +1,11 @@
 import { useState,useEffect } from "react";
 import { API_URL } from '../config';
 import { useAuth } from './RouteProtection';
-
+import { 
+  deserializeVaultKey, 
+  encryptVaultItem, 
+  decryptVaultItem 
+} from '../cryptoHelpers';
 
 import { 
   PlusCircle, 
@@ -64,51 +68,100 @@ const generatePassword = (length = 16) => {
 export default function Vault() {
   const [passwords, setPasswords] = useState([]);
   const { user, isLoading } = useAuth();
+  const [vaultKey, setVaultKey] = useState(null);
 
-useEffect(() => {
-  console.log("=== Vault useEffect triggered ===", { isLoading });
-  
-  const fetchPasswords = async () => {
-    const token = localStorage.getItem("sessionToken");
-    console.log("Token from localStorage:", token);
-    
-    if (!token || isLoading) {
-      console.log("Skipping fetch - no token or still loading", { hasToken: !!token, isLoading });
-      return;
-    }
-    
-    console.log("Making GET request to /vault");
-    
-    try {
-      const res = await fetch(`${API_URL}/vault`, {
-        method: "GET",
-        headers: { 
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
+
+  useEffect(() => {
+    const loadVaultKey = async () => {
+      const serializedKey = sessionStorage.getItem("vaultKey");
+      if (serializedKey) {
+        try {
+          const key = await deserializeVaultKey(serializedKey);
+          setVaultKey(key);
+        } catch (err) {
+          console.error("Failed to load vault key:", err);
         }
-      });
-
-      console.log("GET /vault response status:", res.status);
-
-      if (res.ok) {
-        const data = await res.json();
-        console.log("Passwords fetched successfully:", data);
-        setPasswords(data);
-      } else {
-        console.error("Failed to fetch passwords:", res.status);
       }
-    } catch (err) {
-      console.error("Error fetching passwords:", err);
-    }
-  };
+    };
+    loadVaultKey();
+  }, []);
 
-  if (!isLoading) {
-    console.log("isLoading is false, calling fetchPasswords");
-    fetchPasswords();
-  } else {
-    console.log("Still loading, not fetching yet");
-  }
-}, [isLoading]);
+
+  useEffect(() => {
+    console.log("=== Vault useEffect triggered ===", { isLoading, hasVaultKey: !!vaultKey });
+    
+    const fetchPasswords = async () => {
+      const token = localStorage.getItem("sessionToken");
+      console.log("Token from localStorage:", token);
+      
+      if (!token || isLoading || !vaultKey) {
+        console.log("Skipping fetch - no token, still loading, or no vault key", { 
+          hasToken: !!token, 
+          isLoading, 
+          hasVaultKey: !!vaultKey 
+        });
+        return;
+      }
+      
+      console.log("Making GET request to /vault");
+      
+      try {
+        const res = await fetch(`${API_URL}/vault`, {
+          method: "GET",
+          headers: { 
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          }
+        });
+
+        console.log("GET /vault response status:", res.status);
+
+        if (res.ok) {
+          const data = await res.json();
+          console.log("Encrypted passwords fetched:", data);
+          
+          // Decrypt passwords client-side
+          const decryptedPasswords = await Promise.all(
+            data.map(async (pw) => {
+              try {
+                // Parse the encrypted password JSON
+                const encryptedData = JSON.parse(pw.password);
+                const decryptedPassword = await decryptVaultItem(
+                  vaultKey,
+                  encryptedData.ciphertext,
+                  encryptedData.iv
+                );
+                
+                return {
+                  ...pw,
+                  password: decryptedPassword
+                };
+              } catch (err) {
+                console.error("Failed to decrypt password:", err);
+                return {
+                  ...pw,
+                  password: "[Decryption failed]"
+                };
+              }
+            })
+          );
+          
+          setPasswords(decryptedPasswords);
+        } else {
+          console.error("Failed to fetch passwords:", res.status);
+        }
+      } catch (err) {
+        console.error("Error fetching passwords:", err);
+      }
+    };
+
+    if (!isLoading && vaultKey) {
+      console.log("Ready to fetch passwords");
+      fetchPasswords();
+    } else {
+      console.log("Still loading or no vault key");
+    }
+  }, [isLoading, vaultKey]);
 
 
   
@@ -145,16 +198,29 @@ useEffect(() => {
   };
 
   const handleAddPassword = async (e) => {
-    const token = localStorage.getItem("sessionToken");
+    
     e.preventDefault();
+
+    if (!vaultKey) {
+      showNotification("Vault key not available. Please log in again.");
+      return;
+    }
+
+    const token = localStorage.getItem("sessionToken");
     try {
+      const encryptedPassword = await encryptVaultItem(vaultKey, formData.password);
       const res = await fetch(`${API_URL}/vault`, {
         method: "POST",
         headers: { 
           "Content-Type": "application/json" ,
           "Authorization": `Bearer ${token}`
           },
-        body: JSON.stringify(formData)
+        body: JSON.stringify({
+          site: formData.site,
+          username: formData.username,
+          password: JSON.stringify(encryptedPassword), // Send as JSON string
+          category: formData.category
+          })
       });
 
       if (res.ok) {
