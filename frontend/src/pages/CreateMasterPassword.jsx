@@ -2,6 +2,7 @@ import { LoginHeader } from "../components/LoginHeader";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { API_URL } from '../config';
+import { hashPasswordForLogin } from '../cryptoHelpers';
 
 export default function CreateMasterPassword() {
 
@@ -12,17 +13,25 @@ export default function CreateMasterPassword() {
   const handleCreatePassword = async () => {
     setError(null);
     const temp_token = sessionStorage.getItem("temp_token");
+    const email = sessionStorage.getItem("user_email");
     try {
+
+      const hashedPassword = await hashPasswordForLogin(password, email);
+
       const res = await fetch(`${API_URL}/createPassword`, {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({temp_token, password }),
+        body: JSON.stringify({temp_token, password: hashedPassword }),
       });
 
       if (res.ok) {
         const data = await res.json();
         console.log("Password successfully created:", data);
+
+        sessionStorage.removeItem("temp_token");
+        sessionStorage.removeItem("user_email");
+
         navigate("/login");
       } else {
         const errorData = await res.json();
