@@ -15,7 +15,7 @@ def get_passwords(current_user):
         "id": pw.id,
         "site": pw.site,
         "username": pw.username,
-        "password": pw.password_encrypted.decode(),  # decode bytes to string
+        "password": pw.password_encrypted.decode('utf-8'),  
         "category": pw.label,  # label acts as category
         "lastUpdated": pw.updated_at.strftime("%Y-%m-%d")
     } for pw in passwords]), 200
@@ -30,7 +30,7 @@ def add_password(current_user):
         site = data["site"], 
         label=data.get("category", "Personal"),             
         username=data.get("username"),
-        password_encrypted=data.get("password").encode()  
+        password_encrypted=data.get("password").encode('utf-8')  
     )
     db.session.add(pw)
     db.session.commit()
