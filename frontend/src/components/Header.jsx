@@ -5,7 +5,7 @@ import { API_URL } from '../config';
 
 
 export function Header({ toggleSidebar }) {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(() => window.innerWidth >= 768);
   const navigate = useNavigate();
 
   const [notification, setNotification] = useState(null);
