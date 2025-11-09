@@ -22,6 +22,9 @@ ENV FLASK_APP=run:create_app
 ENV FLASK_ENV=production
 
 # Start Gunicorn **after running migrations**
-CMD flask db upgrade && gunicorn -b 0.0.0.0:5000 run:app
+COPY entrypoint.sh .
+RUN chmod +x entrypoint.sh
+CMD ["./entrypoint.sh"]
+
 
 
