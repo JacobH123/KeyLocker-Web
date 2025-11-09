@@ -76,14 +76,41 @@ export  function ProtectedRoute({ children }) {
 
 
 export function TempTokenRoute({ children }) {
-  const tempToken = sessionStorage.getItem("temp_token");
+  const [tokenChecked, setTokenChecked] = useState(false);
+  const navigate = useNavigate();
 
-  if (!tempToken) {
-    return <Navigate to="/signup" replace />; // redirect if no token
-  }
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+
+    // Grab token and email from URL
+    const tempTokenFromURL = params.get("temp_token");
+    const emailFromURL = params.get("email");
+
+    if (tempTokenFromURL) {
+      sessionStorage.setItem("temp_token", tempTokenFromURL);
+      if (emailFromURL) {
+        sessionStorage.setItem("user_email", emailFromURL);
+      }
+
+      // Remove query params from URL so they aren't visible
+      window.history.replaceState({}, document.title, "/createpassword");
+    }
+
+    // Grab token from sessionStorage if URL didn't provide it
+    const tempToken = sessionStorage.getItem("temp_token");
+
+    if (!tempToken) {
+      setTimeout(() => navigate("/signup", { replace: true }), 0);
+    } else {
+      setTokenChecked(true);
+    }
+  }, [navigate]);
+
+  if (!tokenChecked) return null;
 
   return children;
 }
+
 
 //Protect against manual url
 export function EmailVerifyRoute({ children }) {
