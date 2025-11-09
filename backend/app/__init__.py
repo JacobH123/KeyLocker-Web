@@ -33,13 +33,16 @@ def create_app():
     
 
     # Database config
-    DB_USER = os.getenv("DB_USER")
-    DB_PASSWORD = os.getenv("DB_PASSWORD")
-    DB_NAME = os.getenv("DB_NAME")
-    DB_HOST = os.getenv("DB_HOST", "localhost")
+    DB_USER = os.environ.get("DB_USER")
+    DB_PASSWORD = os.environ.get("DB_PASSWORD")
+    DB_NAME = os.environ.get("DB_NAME")
+    DB_HOST = os.environ.get("DB_HOST")
+    
+
+    
     app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}/{DB_NAME}'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    
+
 
     # Initialize extensions
     limiter.init_app(app)
@@ -55,5 +58,13 @@ def create_app():
     app.register_blueprint(auth_bp)
     app.register_blueprint(verify_bp)
     app.register_blueprint(vault_bp)
+    
+    @app.route('/')
+    def index():
+        return "KeyLocker backend is running!"
+
+    @app.route('/health')
+    def health():
+        return "OK"
 
     return app
