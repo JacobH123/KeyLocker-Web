@@ -21,7 +21,7 @@ backend/__pycache__/
 *.db
 *.sqlite3
 keylocker_dump.sql
-
+*.zip
 backend/.env
 backend/.flaskenv
 # Editor directories and files
