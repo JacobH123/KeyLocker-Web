@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify, make_response
+from flask import Blueprint, request, jsonify, make_response,url_for
 from flask_limiter.util import get_remote_address
 from werkzeug.security import check_password_hash, generate_password_hash
 from .models import User
@@ -33,10 +33,12 @@ code to the registered email."""
     new_user.verification_code = code
     new_user.code_expires_at = datetime.utcnow() + timedelta(minutes=10)
     db.session.commit()
-    
+    verify_url = url_for('verify.verify_link', code=code,email=new_user.email, _external=True)
+
     html_body = f"""
     <p>Hello,</p>
     <p>Your verification code is: <strong style="font-size:18px;">{code}</strong></p>
+    <p><a href="{verify_url}">{verify_url}</a></p>
     <p>This code expires in 10 minutes.</p>
     <p>Thanks,<br>KeyLocker Team</p>
     """
