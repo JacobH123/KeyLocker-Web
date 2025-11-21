@@ -1,4 +1,4 @@
-from . import db
+from . import db,limiter
 from flask import Blueprint, request, jsonify,redirect
 import os
 from .models import User
@@ -61,21 +61,39 @@ def verify_token():
 
 FRONTEND_URL = os.getenv("FRONTEND_URL", "http://127.0.0.1:5173")
 @verify_bp.route("/verify/<code>", methods=["GET"])
+@limiter.limit("5 per hour")
 def verify_link(code):
+    email = request.args.get("email")
+
     user = User.query.filter_by(verification_code=code).first()
+
+    if not user and email:
+        user = User.query.filter_by(email=email).first()
 
     if not user:
         return jsonify({'error': 'Invalid verification link'}), 404
 
+    if user.verified:
+        if user.password_hash:
+            return redirect(f"{FRONTEND_URL}/login")
+        else:
+            if user.temp_token and user.temp_token_expires_at and user.temp_token_expires_at > datetime.utcnow():
+                temp_token = user.temp_token
+            else:
+                temp_token = secrets.token_urlsafe(32)
+                user.temp_token = temp_token
+                user.temp_token_expires_at = datetime.utcnow() + timedelta(minutes=15)
+                db.session.commit()
+
+            return redirect(f"{FRONTEND_URL}/createpassword?temp_token={temp_token}&email={user.email}")
+
     if not user.code_expires_at or user.code_expires_at < datetime.utcnow():
         return jsonify({'error': 'Verification link expired'}), 409
 
-    
     user.verified = True
     user.verification_code = None
     user.code_expires_at = None
 
-    
     temp_token = secrets.token_urlsafe(32)
     user.temp_token = temp_token
     user.temp_token_expires_at = datetime.utcnow() + timedelta(minutes=15)
@@ -83,6 +101,8 @@ def verify_link(code):
     db.session.commit()
 
     return redirect(f"{FRONTEND_URL}/createpassword?temp_token={temp_token}&email={user.email}")
+
+
 
 
 
