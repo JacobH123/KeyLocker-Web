@@ -1,4 +1,7 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { API_URL } from '../config';
+import { useAuth } from "../components/RouteProtection";
 import { 
   User,
   Shield,
@@ -15,6 +18,11 @@ import {
 } from "lucide-react";
 
 export default function Settings() {
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const userEmail = user?.email || "guest@example.com";
+  const userName = user?.name || userEmail.split('@')[0];
+  const userInitials = userName.slice(0, 2).toUpperCase();
   const [emailNotifications, setEmailNotifications] = useState(true);
   const [smsNotifications, setSmsNotifications] = useState(false);
   const [darkMode, setDarkMode] = useState(true);
@@ -31,9 +39,25 @@ export default function Settings() {
     showNotification(`${setting} updated successfully!`);
   };
 
-  const handleLogout = () => {
-    showNotification('Logging out...', 'info');
-    // Add logout logic here
+  const handleLogout = async () => {
+    const token = localStorage.getItem("sessionToken");
+    try {
+      const res = await fetch(`${API_URL}/logout`, {
+        method: "POST",
+        headers: { 
+            "Authorization": `Bearer ${token}`
+            }
+      });
+  
+      if (res.ok) {
+        localStorage.removeItem("sessionToken");
+        navigate("/login");
+      } else {
+        showNotification('Failed to logout');
+      }
+    } catch (err) {
+      showNotification('Failed to logout');
+    }
   };
 
   return (
@@ -73,13 +97,13 @@ export default function Settings() {
             
             <div className="flex items-center gap-6">
               <div className="w-20 h-20 bg-gradient-to-br from-purple-600 to-purple-800 rounded-full flex items-center justify-center text-white font-bold text-2xl">
-                JD
+                {userInitials}
               </div>
               <div className="flex-1">
-                <p className="text-lg font-semibold mb-1">John Doe</p>
+                <p className="text-lg font-semibold mb-1">{userName}</p>
                 <p className="text-gray-400 text-sm flex items-center gap-2">
                   <Mail className="w-4 h-4" />
-                  johndoe@example.com
+                  {userEmail}
                 </p>
               </div>
               <button className="px-4 py-2 bg-slate-700 hover:bg-slate-600 rounded-lg transition text-sm font-medium">
@@ -192,63 +216,9 @@ export default function Settings() {
                   }`} />
                 </button>
               </div>
-
-              {/* SMS Notifications */}
-              <div className="flex items-center justify-between p-4 bg-slate-900 rounded-xl">
-                <div className="flex items-center gap-3">
-                  <Smartphone className="w-5 h-5 text-gray-400" />
-                  <div>
-                    <p className="font-medium">SMS Notifications</p>
-                    <p className="text-sm text-gray-400">Receive alerts via text message</p>
-                  </div>
-                </div>
-                <button
-                  onClick={() => {
-                    setSmsNotifications(!smsNotifications);
-                    handleSave('SMS notifications');
-                  }}
-                  className={`relative w-14 h-7 rounded-full transition ${
-                    smsNotifications ? 'bg-purple-600' : 'bg-gray-600'
-                  }`}
-                >
-                  <div className={`absolute top-1 left-1 w-5 h-5 bg-white rounded-full transition-transform ${
-                    smsNotifications ? 'translate-x-7' : 'translate-x-0'
-                  }`} />
-                </button>
-              </div>
             </div>
           </div>
 
-          {/* Appearance Section */}
-          <div className="bg-slate-800 rounded-2xl border border-gray-700 p-6">
-            <div className="flex items-center gap-3 mb-6">
-              <Moon className="w-6 h-6 text-purple-500" />
-              <h2 className="text-xl font-semibold">Appearance</h2>
-            </div>
-            
-            <div className="flex items-center justify-between p-4 bg-slate-900 rounded-xl">
-              <div className="flex items-center gap-3">
-                <Moon className="w-5 h-5 text-gray-400" />
-                <div>
-                  <p className="font-medium">Dark Mode</p>
-                  <p className="text-sm text-gray-400">Use dark theme throughout the app</p>
-                </div>
-              </div>
-              <button
-                onClick={() => {
-                  setDarkMode(!darkMode);
-                  handleSave('Theme');
-                }}
-                className={`relative w-14 h-7 rounded-full transition ${
-                  darkMode ? 'bg-purple-600' : 'bg-gray-600'
-                }`}
-              >
-                <div className={`absolute top-1 left-1 w-5 h-5 bg-white rounded-full transition-transform ${
-                  darkMode ? 'translate-x-7' : 'translate-x-0'
-                }`} />
-              </button>
-            </div>
-          </div>
 
           {/* Danger Zone */}
           <div className="bg-slate-800 rounded-2xl border border-red-900/50 p-6">
