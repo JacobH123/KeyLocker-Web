@@ -137,7 +137,54 @@ def logout(current_user):
     db.session.commit()
     return jsonify({"message": "Logged out successfully"}), 200
 
-
-
 def generate_code():
     return secrets.token_hex(4) 
+
+@auth_bp.route('/delete-account', methods=['DELETE'])
+def delete_account():
+    token = request.headers.get('Authorization', '').replace('Bearer ', '')
+    data = request.get_json()
+    hashed_password = data.get('hashedPassword')
+    
+    if not token:
+        return jsonify({"error": "Unauthorized"}), 401
+    
+    if not hashed_password:
+        return jsonify({"error": "Password required"}), 400
+    
+    user = User.query.filter_by(session_token=token).first()
+    
+    if not user:
+        return jsonify({"error": "Invalid token"}), 401
+    
+    if not check_password_hash(user.password_hash, hashed_password):
+        return jsonify({"error": "Incorrect password"}), 403
+    
+    success, message = delete_user_account(user.id)
+    
+    if success:
+        return jsonify({"message": message}), 200
+    else:
+        return jsonify({"error": message}), 500
+    
+    
+def delete_user_account(user_id):
+    """
+    Delete a user and all their associated data.
+    The CASCADE will automatically delete vault items.
+    """
+    try:
+        user = User.query.get(user_id)
+        
+        if not user:
+            return False, "User not found"
+        
+        db.session.delete(user)
+        db.session.commit()
+        
+        return True, "User account deleted successfully"
+        
+    except Exception as e:
+        db.session.rollback()
+        return False, f"Error deleting user: {str(e)}"
+    
