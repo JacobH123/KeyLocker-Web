@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { API_URL } from '../config';
 import { useAuth } from "../components/RouteProtection";
+import { hashPasswordForLogin } from '../cryptoHelpers';
 import { 
   User,
   Shield,
@@ -28,6 +29,8 @@ export default function Settings() {
   const [darkMode, setDarkMode] = useState(true);
   const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deletePassword, setDeletePassword] = useState("");
   const [notification, setNotification] = useState(null);
 
   const showNotification = (message, type = 'success') => {
@@ -57,6 +60,49 @@ export default function Settings() {
       }
     } catch (err) {
       showNotification('Failed to logout');
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    if (!deletePassword) {
+      showNotification('Please enter your master password', 'error');
+      return;
+    }
+
+    try {
+      // Verify password locally by hashing it the same way as login
+      const hashedPassword = await hashPasswordForLogin(deletePassword, userEmail);
+      
+      const token = localStorage.getItem("sessionToken");
+      
+      // Send delete request to backend
+      const res = await fetch(`${API_URL}/delete-account`, {
+        method: "DELETE",
+        headers: { 
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ hashedPassword })
+      });
+
+      if (res.ok) {
+        showNotification('Account deleted successfully', 'success');
+        // Clear all storage
+        localStorage.removeItem("sessionToken");
+        sessionStorage.removeItem("vaultKey");
+        
+        // Redirect after a short delay
+        setTimeout(() => navigate("/signup"), 2000);
+      } else {
+        const data = await res.json();
+        showNotification(data.error || 'Failed to delete account', 'error');
+      }
+    } catch (err) {
+      console.error('Delete account error:', err);
+      showNotification('Failed to delete account', 'error');
+    } finally {
+      setShowDeleteModal(false);
+      setDeletePassword("");
     }
   };
 
@@ -165,23 +211,6 @@ export default function Settings() {
                   {twoFactorEnabled ? 'Enabled' : 'Enable'}
                 </button>
               </div>
-
-              {/* Session Management */}
-              <div className="flex items-center justify-between p-4 bg-slate-900 rounded-xl hover:bg-slate-900/80 transition">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-blue-600/20 rounded-lg flex items-center justify-center">
-                    <Smartphone className="w-5 h-5 text-blue-500" />
-                  </div>
-                  <div>
-                    <p className="font-medium">Active Sessions</p>
-                    <p className="text-sm text-gray-400">Manage your active devices</p>
-                  </div>
-                </div>
-                <button className="px-4 py-2 bg-slate-700 hover:bg-slate-600 rounded-lg transition text-sm font-medium flex items-center gap-2">
-                  View
-                  <ChevronRight className="w-4 h-4" />
-                </button>
-              </div>
             </div>
           </div>
 
@@ -233,7 +262,10 @@ export default function Settings() {
                   <p className="font-medium text-red-400">Delete Account</p>
                   <p className="text-sm text-gray-400">Permanently delete your account and all data</p>
                 </div>
-                <button className="px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg transition text-sm font-medium">
+                <button 
+                  onClick={() => setShowDeleteModal(true)}
+                  className="px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg transition text-sm font-medium"
+                >
                   Delete
                 </button>
               </div>
@@ -293,6 +325,61 @@ export default function Settings() {
           </div>
         </div>
       )}
+      {/* Delete Account Confirmation Modal */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-6">
+          <div className="bg-slate-800 rounded-2xl border border-red-900/50 p-8 max-w-md w-full">
+            <div className="flex items-center gap-3 mb-4">
+              <AlertCircle className="w-8 h-8 text-red-500" />
+              <h3 className="text-2xl font-bold text-red-400">Delete Account</h3>
+            </div>
+            
+            <p className="text-gray-300 mb-6">
+              This action cannot be undone. All your passwords and data will be permanently deleted.
+            </p>
+            
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Enter your master password to confirm:
+                </label>
+                <input
+                  type="password"
+                  value={deletePassword}
+                  onChange={(e) => setDeletePassword(e.target.value)}
+                  placeholder="Master password"
+                  className="w-full px-4 py-3 rounded-xl bg-slate-900 border border-red-900/50 focus:outline-none focus:ring-2 focus:ring-red-600 text-white"
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter') {
+                      handleDeleteAccount();
+                    }
+                  }}
+                />
+              </div>
+              
+              <div className="flex gap-3 mt-6">
+                <button
+                  onClick={() => {
+                    setShowDeleteModal(false);
+                    setDeletePassword("");
+                  }}
+                  className="flex-1 px-4 py-3 bg-slate-700 hover:bg-slate-600 rounded-xl transition"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleDeleteAccount}
+                  className="flex-1 px-4 py-3 bg-red-600 hover:bg-red-700 rounded-xl transition font-semibold"
+                >
+                  Delete Account
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+
     </div>
   );
 }
