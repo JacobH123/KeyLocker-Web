@@ -2,11 +2,17 @@ import { useState } from "react";
 import { Menu, User, Settings, LogOut, ChevronDown } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { API_URL } from '../config';
+import { useAuth } from "../components/RouteProtection";
 
 
 export function Header({ toggleSidebar }) {
+  const { user } = useAuth();
+  const userEmail = user?.email || "guest@example.com";
+  const userName = user?.name || userEmail.split('@')[0];
+  const userInitials = userName.slice(0, 2).toUpperCase();
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
+  
 
   const [notification, setNotification] = useState(null);
   const showNotification = (message) => {
@@ -79,7 +85,7 @@ export function Header({ toggleSidebar }) {
             className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-slate-800 transition group"
           >
             <div className="w-9 h-9 bg-gradient-to-br from-purple-600 to-purple-800 rounded-full flex items-center justify-center text-white font-semibold text-sm">
-              JD
+              {userInitials}
             </div>
             <ChevronDown className={`w-4 h-4 text-gray-400 group-hover:text-white transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
           </button>
@@ -98,8 +104,8 @@ export function Header({ toggleSidebar }) {
               >
                 {/* User Info Header */}
                 <div className="px-4 py-3 bg-slate-900 border-b border-gray-700">
-                  <p className="font-semibold text-white">John Doe</p>
-                  <p className="text-xs text-gray-400">johndoe@example.com</p>
+                  <p className="font-semibold text-white">{userInitials}</p>
+                  <p className="text-xs text-gray-400">{userEmail}</p>
                 </div>
 
                 {/* Menu Items */}
