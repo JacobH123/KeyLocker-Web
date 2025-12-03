@@ -55,9 +55,11 @@ def create_app():
     from .signup import auth_bp   # import blueprint
     from .verify import verify_bp
     from .vault import vault_bp
+    from .settings import settings_bp
     app.register_blueprint(auth_bp)
     app.register_blueprint(verify_bp)
     app.register_blueprint(vault_bp)
+    app.register_blueprint(settings_bp)
     
     @app.route('/')
     def index():
