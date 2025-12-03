@@ -14,6 +14,10 @@ class User(db.Model):
     
     session_token = db.Column(db.String(), nullable=True)
     session_token_expires_at = db.Column(db.DateTime(), nullable=True)
+    email_notifications = db.Column(db.Boolean, default=True)
+    
+    two_factor_enabled = db.Column(db.Boolean, default=False)
+    two_factor_secret = db.Column(db.String(32), nullable=True)
 
 class VaultItem(db.Model):
     __tablename__ = 'vault_items'
