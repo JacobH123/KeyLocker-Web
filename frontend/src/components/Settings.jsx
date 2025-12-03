@@ -105,6 +105,34 @@ export default function Settings() {
       setDeletePassword("");
     }
   };
+  const handleEmailNotificationsToggle = async () => {
+  const newValue = !emailNotifications;
+  setEmailNotifications(newValue);
+  
+  try {
+    const token = localStorage.getItem("sessionToken");
+    const res = await fetch(`${API_URL}/update-email-notifications`, {
+      method: "POST",
+      headers: { 
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ emailNotifications: newValue })
+    });
+
+    if (res.ok) {
+      showNotification('Email notifications updated successfully!');
+    } else {
+      // Revert on error
+      setEmailNotifications(!newValue);
+      showNotification('Failed to update email notifications', 'error');
+    }
+  } catch (err) {
+    // Revert on error
+    setEmailNotifications(!newValue);
+    showNotification('Failed to update email notifications', 'error');
+  }
+};
 
   return (
     <div className="flex-1 p-6 bg-gradient-to-br from-[#1a1a2e] via-black to-[#1a1a2e] text-white overflow-auto">
@@ -232,10 +260,7 @@ export default function Settings() {
                   </div>
                 </div>
                 <button
-                  onClick={() => {
-                    setEmailNotifications(!emailNotifications);
-                    handleSave('Email notifications');
-                  }}
+                  onClick={() => handleEmailNotificationsToggle()}
                   className={`relative w-14 h-7 rounded-full transition ${
                     emailNotifications ? 'bg-purple-600' : 'bg-gray-600'
                   }`}
