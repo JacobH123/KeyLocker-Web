@@ -16,5 +16,12 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: './tests/setup.js',
     css: true,
+
+    pool: 'forks',
+    poolOptions: {
+      forks: {
+        singleFork: true,
+      },
+    },
   },
 })
