@@ -141,6 +141,7 @@ def generate_code():
     return secrets.token_hex(4) 
 
 @auth_bp.route('/delete-account', methods=['DELETE'])
+@login_required
 def delete_account():
     token = request.headers.get('Authorization', '').replace('Bearer ', '')
     data = request.get_json()
