@@ -2,26 +2,16 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 
-
-// https://vite.dev/config/
 export default defineConfig({
   plugins: [
     react(),
     tailwindcss(),
-
   ],
   base: '/',
   test: {
     globals: true,
-    environment: 'jsdom',
+    environment: 'happy-dom',  
     setupFiles: './tests/setup.js',
     css: true,
-
-    pool: 'forks',
-    poolOptions: {
-      forks: {
-        singleFork: true,
-      },
-    },
   },
 })
