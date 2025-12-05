@@ -1,13 +1,11 @@
 import { LoginHeader } from "../components/LoginHeader";
 import { useState } from "react";
-import { useAuth } from "../components/RouteProtection";
 import { useNavigate } from 'react-router-dom';
 import { API_URL } from '../config';
 
 export default function EmailVerify() {
   const [verification_code, setverification_code] = useState("");
-  const [error, setError] = useState(null);
-  const { login } = useAuth();
+  const [setError] = useState(null);
   const navigate = useNavigate();
 
   const handleVerify = async () => {

@@ -1,9 +1,7 @@
-import { useState } from "react";
 import { Link } from "react-router-dom";
 
 
 export function HomeHeader() {
-  const [isOpen, setIsOpen] = useState(false);
   return (
     <header className="w-full bg-black text-white p-4 flex justify-between items-center rounded-lg h-16 border-b border-gray-500">
 

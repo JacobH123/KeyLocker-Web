@@ -139,7 +139,7 @@ export function RedirectIfLoggedIn() {
         if (res.ok) {
           navigate("/passwords");
         }
-      } catch (err) {
+      } catch{
         console.log("Not logged in");
       }
     };

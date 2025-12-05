@@ -14,7 +14,7 @@ export function Header({ toggleSidebar }) {
   const navigate = useNavigate();
   
 
-  const [notification, setNotification] = useState(null);
+  const [setNotification] = useState(null);
   const showNotification = (message) => {
     setNotification(message);
     setTimeout(() => setNotification(null), 3000);
@@ -36,7 +36,7 @@ export function Header({ toggleSidebar }) {
       } else {
         showNotification('Failed to logout');
       }
-    } catch (err) {
+    } catch{
       showNotification('Failed to logout');
     }
   };
@@ -44,13 +44,11 @@ export function Header({ toggleSidebar }) {
   const handleMenuClick = (action) => {
     
     if (action === 'profile') {
-      // Navigate to profile or handle profile action
-      console.log('Profile clicked');
+    // TODO: Implement profile navigation
     } else if (action === 'settings') {
       navigate('/settings');
     } else if (action === 'logout') {
       handleLogout();
-      console.log('Logout clicked');
     }
     setIsOpen(false);
   };

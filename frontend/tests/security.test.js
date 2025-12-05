@@ -1,4 +1,4 @@
-import { describe, test, expect } from 'vitest';
+import { describe, test} from 'vitest';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';

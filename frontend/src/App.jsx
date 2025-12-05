@@ -1,5 +1,4 @@
-import { BrowserRouter as Router, Routes, Route,useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { BrowserRouter as Router, Routes, Route} from "react-router-dom";
 import Downloads from './pages/Downloads';
 import Settings from "./components/Settings";
 import HomePage from "./pages/HomePage";
@@ -11,7 +10,7 @@ import EmailVerify from "./pages/EmailVerify";
 import Vault from "./components/Vault";
 import CreateMasterPassword from "./pages/CreateMasterPassword";
 import { AuthProvider, ProtectedRoute,EmailVerifyRoute,TempTokenRoute } from './components/RouteProtection';
-import { RedirectIfLoggedIn } from "./components/RouteProtection";
+{/* import { RedirectIfLoggedIn } from "./components/RouteProtection";*/} 
 
 export const App = () => {
 

@@ -25,8 +25,6 @@ export default function Settings() {
   const userName = user?.name || userEmail.split('@')[0];
   const userInitials = userName.slice(0, 2).toUpperCase();
   const [emailNotifications, setEmailNotifications] = useState(true);
-  const [smsNotifications, setSmsNotifications] = useState(false);
-  const [darkMode, setDarkMode] = useState(true);
   const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -58,7 +56,7 @@ export default function Settings() {
       } else {
         showNotification('Failed to logout');
       }
-    } catch (err) {
+    } catch{
       showNotification('Failed to logout');
     }
   };
@@ -127,7 +125,7 @@ export default function Settings() {
       setEmailNotifications(!newValue);
       showNotification('Failed to update email notifications', 'error');
     }
-  } catch (err) {
+  } catch{
     // Revert on error
     setEmailNotifications(!newValue);
     showNotification('Failed to update email notifications', 'error');

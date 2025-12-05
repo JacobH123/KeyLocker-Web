@@ -67,7 +67,7 @@ const generatePassword = (length = 16) => {
 
 export default function Vault() {
   const [passwords, setPasswords] = useState([]);
-  const { user, isLoading } = useAuth();
+  const {isLoading } = useAuth();
   const [vaultKey, setVaultKey] = useState(null);
 
 
@@ -258,7 +258,7 @@ const handleDelete = async (id) => {
     } else {
       showNotification('Failed to delete password');
     }
-  } catch (err) {
+  } catch{
     showNotification('Error deleting password');
   }
 };

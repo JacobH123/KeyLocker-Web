@@ -7,8 +7,8 @@ import { API_URL } from '../config';
 export default function Signup() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
-  const [error, setError] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [setError] = useState(null);
+  const [setIsLoading] = useState(false);
 
   const handleSignup = async () => {
     if (!email.trim()) {
