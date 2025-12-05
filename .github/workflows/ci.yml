@@ -1,26 +1,39 @@
 name: Frontend CI/CD
 
+# Trigger on push to main or PR, but only when frontend changes
 on:
   push:
     branches: [main]
     paths:
       - "frontend/**"
+      - ".github/workflows/ci.yml"
   pull_request:
     branches: [main]
     paths:
       - "frontend/**"
+      - ".github/workflows/ci.yml"
 
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./frontend
 
     steps:
+      # Check out your repository code
       - name: Checkout code
         uses: actions/checkout@v3
 
+      # Check for .env files in entire repo
+      - name: Check for committed .env files
+        run: |
+          if find . -name ".env*" -not -path "*/node_modules/*" -not -path "*/.git/*" | grep -q .; then
+            echo "Error: .env files found in repository!"
+            find . -name ".env*" -not -path "*/node_modules/*" -not -path "*/.git/*"
+            exit 1
+          else
+            echo "✓ No .env files found"
+          fi
+
+      # Set up Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
@@ -28,14 +41,31 @@ jobs:
           cache: "npm"
           cache-dependency-path: "./frontend/package-lock.json"
 
+      # Install dependencies
       - name: Install dependencies
+        working-directory: ./frontend
         run: npm ci
 
+      # Run linting
       - name: Run linter
+        working-directory: ./frontend
         run: npm run lint
 
+      # Run tests
       - name: Run tests
+        working-directory: ./frontend
         run: npm test
+        env:
+          CI: true
 
+      # Build the project
       - name: Build project
+        working-directory: ./frontend
         run: npm run build
+
+      # Optional: Upload build artifacts
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: dist
+          path: frontend/dist/
