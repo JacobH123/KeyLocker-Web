@@ -7,20 +7,19 @@ import { API_URL } from '../config';
 export default function Signup() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
-  const [setError] = useState(null);
-  const [setIsLoading] = useState(false);
-
+  const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  
   const handleSignup = async () => {
     if (!email.trim()) {
       setError("Please enter your email");
       return;
     }
-
     setError(null);
     setIsLoading(true);
-
+    
     try {
-      const res = await fetch(`${API_URL}/signup`, {
+      const res = await fetch(`${API_URL}/signup`, {  
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
