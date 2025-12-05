@@ -5,7 +5,7 @@ import { API_URL } from '../config';
 
 export default function EmailVerify() {
   const [verification_code, setverification_code] = useState("");
-  const [setError] = useState(null);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
   const handleVerify = async () => {
@@ -56,6 +56,9 @@ export default function EmailVerify() {
         {/* Login card */}
         <div className="bg-[#2e2e3a] p-8 rounded-2xl shadow-lg w-full max-w-sm">
           <div className="space-y-4">
+            {error && (  
+              <div className="text-red-500 text-sm">{error}</div>
+            )}
             <input
               type="text"
               placeholder="Enter Email Verification Code"
