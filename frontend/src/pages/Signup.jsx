@@ -55,6 +55,9 @@ export default function Signup() {
 
         <div className="bg-[#2e2e3a] p-8 rounded-2xl shadow-lg w-full max-w-sm">
           <div className="space-y-4">
+          {error && (
+              <div className="text-red-500 text-sm">{error}</div>
+            )}
             <input
               type="text"
               placeholder="Enter Email"
@@ -65,6 +68,7 @@ export default function Signup() {
             <button
               className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-4 rounded transition duration-200"
               onClick={handleSignup}
+              disabled={isLoading}
             >
               Sign Up
             </button>
