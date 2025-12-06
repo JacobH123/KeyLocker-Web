@@ -142,26 +142,18 @@ def generate_code():
 
 @auth_bp.route('/delete-account', methods=['DELETE'])
 @login_required
-def delete_account():
-    token = request.headers.get('Authorization', '').replace('Bearer ', '')
+def delete_account(current_user):
     data = request.get_json()
     hashed_password = data.get('hashedPassword')
-    
-    if not token:
-        return jsonify({"error": "Unauthorized"}), 401
-    
+ 
     if not hashed_password:
         return jsonify({"error": "Password required"}), 400
     
-    user = User.query.filter_by(session_token=token).first()
-    
-    if not user:
-        return jsonify({"error": "Invalid token"}), 401
-    
-    if not check_password_hash(user.password_hash, hashed_password):
+
+    if not check_password_hash(current_user.password_hash, hashed_password):
         return jsonify({"error": "Incorrect password"}), 403
     
-    success, message = delete_user_account(user.id)
+    success, message = delete_user_account(current_user.id)
     
     if success:
         return jsonify({"message": message}), 200
